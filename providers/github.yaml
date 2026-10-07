@@ -1,0 +1,22 @@
+# GitHub provider profile, adapted from OpenShell's providers/github.yaml.
+# The token may only be used against api.github.com, read-only by default.
+id: github-triage
+display_name: GitHub (triage agent)
+description: GitHub REST API for the triage agent
+category: source_control
+credentials:
+  - name: api_token
+    description: GitHub fine-grained token
+    env_vars: [GITHUB_TOKEN]
+    required: true
+    auth_style: bearer
+    header_name: authorization
+discovery:
+  credentials: [api_token]
+endpoints:
+  - host: api.github.com
+    port: 443
+    protocol: rest
+    access: read-only
+    enforcement: enforce
+binaries: [/usr/bin/curl, /usr/bin/python3.12]

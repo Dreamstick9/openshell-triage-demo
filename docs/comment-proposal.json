@@ -1,0 +1,25 @@
+{
+  "intent_summary": "Allow curl to post the triage summary as a comment on issue #1 only.",
+  "operations": [
+    {
+      "addRule": {
+        "ruleName": "github_issue1_comment",
+        "rule": {
+          "name": "github_issue1_comment",
+          "endpoints": [
+            {
+              "host": "api.github.com",
+              "port": 443,
+              "protocol": "rest",
+              "enforcement": "enforce",
+              "rules": [
+                { "allow": { "method": "POST", "path": "/repos/Dreamstick9/openshell-triage-demo/issues/1/comments" } }
+              ]
+            }
+          ],
+          "binaries": [ { "path": "/usr/bin/curl" } ]
+        }
+      }
+    }
+  ]
+}

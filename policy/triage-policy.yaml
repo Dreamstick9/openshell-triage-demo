@@ -1,0 +1,39 @@
+# Sandbox policy for the issue-triage agent: least privilege.
+# Anything not listed here is denied.
+version: 1
+
+# Files (enforced by Landlock in the kernel, fixed when the sandbox starts).
+# /opt is deliberately absent, so /opt/corp/prod.env is unreadable even though
+# its Unix permissions (0644) would allow it.
+filesystem_policy:
+  include_workdir: true
+  read_only: [/usr, /lib, /bin, /etc, /proc, /dev/urandom]
+  read_write: [/sandbox, /tmp, /dev/null]
+
+# Network (enforced by the OpenShell supervisor on every connection, can be
+# changed while the sandbox runs). Each rule = which program may reach which
+# host, with which access.
+network_policies:
+  # The agent itself (python3) may call the model API.
+  openai_api:
+    endpoints:
+      - host: api.openai.com
+        port: 443
+        protocol: rest
+        enforcement: enforce
+        access: read-write
+    binaries:
+      - path: /usr/bin/python3.12
+
+  # The agent and curl may READ GitHub. Writes (POST/PATCH/DELETE) are denied
+  # until a human approves a narrower rule.
+  github_read_only:
+    endpoints:
+      - host: api.github.com
+        port: 443
+        protocol: rest
+        enforcement: enforce
+        access: read-only
+    binaries:
+      - path: /usr/bin/curl
+      - path: /usr/bin/python3.12
