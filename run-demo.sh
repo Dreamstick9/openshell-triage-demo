@@ -30,4 +30,7 @@ openshell sandbox create --name "$SANDBOX" --from triage-agent:local \
 echo
 echo "==> What OpenShell blocked (from the sandbox's audit log)"
 openshell logs "$SANDBOX" --since 15m 2>/dev/null \
-  | grep -E "DENIED|FINDING|credential_endpoint_mismatch" | sed 's/^\[[0-9.]*\] //' || true
+  | grep -E "DENIED|FINDING|credential_endpoint_mismatch" \
+  | grep -v "policy generation is stale" | sed 's/^\[[0-9.]*\] //' || true
+# ("policy generation is stale" lines are OpenShell closing an open model
+#  connection after a settings change, not an attack; the agent retries.)
