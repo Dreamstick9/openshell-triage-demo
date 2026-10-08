@@ -23,26 +23,7 @@ The agent then gave up and wrote an honest summary: *"Diagnostic steps … could
 
 ## Architecture
 
-```mermaid
-flowchart TB
-    subgraph sandbox["Sandbox (MicroVM)"]
-        agent["triage_agent.py"]
-        tools["curl / cat"]
-        agent --> tools
-    end
-    gateway["OpenShell gateway<br/>stores the policy and real keys"]
-    supervisor["OpenShell supervisor<br/>checks policy, injects keys"]
-    openai["api.openai.com"]
-    github["api.github.com<br/>read-only"]
-    other["any other host"]
-
-    gateway -.->|policy and keys| supervisor
-    agent --> supervisor
-    tools --> supervisor
-    supervisor -->|allowed| openai
-    supervisor -->|allowed| github
-    supervisor -->|denied| other
-```
+![Architecture: the agent and curl run inside the OpenShell sandbox; every connection goes through the OpenShell supervisor, which allows api.openai.com and read-only api.github.com and denies everything else](docs/architecture.png)
 
 - **Gateway:** the control plane. It stores the policy and the real credentials, and creates sandboxes.
 - **Sandbox:** a MicroVM with no network device of its own. The agent runs as a non-root user.
