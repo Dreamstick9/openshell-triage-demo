@@ -27,8 +27,9 @@
 **Least privilege:** one comment needed → narrow proposal → prover flags `credential_reach_expansion` → human approves → live reload → 201; issue #2 still 403
 
 ## Slide 4: What I learned
-- **Models:** gpt-6-luna ignored the injection; gpt-5.4-nano, gpt-4.1-nano and gpt-4o-mini fell for it. You can't rely on the model
-- **Containment ≠ detection:** OpenShell limits what a tricked agent can do; it doesn't spot the injection. Real systems need both: sandbox **and** an AI gateway / guardrails
+- **Models (5 runs each):** gpt-6-luna fell for it 0/5, gpt-5.4-nano 2/5, gpt-4.1-nano 5/5, gpt-4o-mini 5/5. The demo uses gpt-4.1-nano on purpose: production often runs small models
+- **Containment ≠ detection:** OpenShell limits what a tricked agent can do; it doesn't spot the injection
+- **Where Nirmata fits:** detecting injected content belongs in an AI gateway (like AIControls), alongside kernel-level runtime enforcement
 - **Limits:** no judgment of data sent to allowed destinations; file denials aren't in the audit log; auto-approval is risky
 - **Debugging:** Docker Desktop's kernel lacks Landlock → moved to OpenShell's MicroVM driver
 
