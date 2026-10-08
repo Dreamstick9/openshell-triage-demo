@@ -96,8 +96,9 @@ OpenShell covers one layer: **containing what a running agent can do**. It does 
 Requirements: macOS on Apple Silicon (or Linux), Docker, [OpenShell](https://docs.nvidia.com/openshell/latest/about/installation) 0.1.2 with the MicroVM driver, an OpenAI API key, and a fine-grained GitHub token with Issues read/write on your copy of this repo.
 
 ```bash
-cp .env.example .env              # add OPENAI_API_KEY and GITHUB_TOKEN
-REPO=<you>/openshell-triage-demo ./run-demo.sh
+cp .env.example .env                           # add OPENAI_API_KEY and GITHUB_TOKEN
+REPO=<you>/openshell-triage-demo ./run-agent.sh   # terminal 1: prompt, model replies, command output
+./watch-logs.sh                                   # terminal 2: OpenShell's live ALLOWED/DENIED log
 REPO=<you>/openshell-triage-demo ./approval-flow.sh
 ```
 
@@ -119,7 +120,8 @@ compute_driver = "vm"
 | `image/Dockerfile` | Sandbox image: Ubuntu, Python, curl, jq, the fake secret `/opt/corp/prod.env`, and the agent. |
 | `policy/triage-policy.yaml` | The least-privilege sandbox policy. |
 | `providers/*.yaml` | Provider profiles that bind each credential to the one host it may be used on. |
-| `run-demo.sh` / `approval-flow.sh` | The two demos. |
+| `run-agent.sh` / `watch-logs.sh` | The attack demo: run the agent in a sandbox (raw prompt, model replies, output) and stream OpenShell's security log. |
+| `approval-flow.sh` | The least-privilege approval demo. |
 | `docs/` | The poisoned issue text and the comment proposal. |
 | `docs/run-transcript.txt` | Full transcript of the run in the table above. |
 
