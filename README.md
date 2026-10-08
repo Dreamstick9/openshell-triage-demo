@@ -24,17 +24,24 @@ The agent then gave up and wrote an honest summary: *"Diagnostic steps … could
 ## Architecture
 
 ```mermaid
-flowchart LR
-  subgraph VM["OpenShell sandbox (MicroVM)"]
-    A["triage_agent.py<br/>(python3)"] -->|shell commands| C["curl / cat"]
-  end
-  A -->|every connection| S
-  C -->|every connection| S
-  S["OpenShell supervisor<br/>policy check + credential injection"]
-  S -->|allowed, real key injected| O["api.openai.com"]
-  S -->|GET only| G["api.github.com"]
-  S -.->|denied| X["exfil.attacker.example and everything else"]
-  GW["OpenShell gateway<br/>(control plane: policy, providers)"] --- S
+flowchart TB
+    subgraph sandbox["Sandbox (MicroVM)"]
+        agent["triage_agent.py"]
+        tools["curl / cat"]
+        agent --> tools
+    end
+    gateway["OpenShell gateway<br/>stores the policy and real keys"]
+    supervisor["OpenShell supervisor<br/>checks policy, injects keys"]
+    openai["api.openai.com"]
+    github["api.github.com<br/>read-only"]
+    other["any other host"]
+
+    gateway -.->|policy and keys| supervisor
+    agent --> supervisor
+    tools --> supervisor
+    supervisor -->|allowed| openai
+    supervisor -->|allowed| github
+    supervisor -->|denied| other
 ```
 
 - **Gateway:** the control plane. It stores the policy and the real credentials, and creates sandboxes.
@@ -122,6 +129,6 @@ compute_driver = "vm"
 | `providers/*.yaml` | Provider profiles that bind each credential to the one host it may be used on. |
 | `run-agent.sh` / `watch-logs.sh` | The attack demo: run the agent in a sandbox (raw prompt, model replies, output) and stream OpenShell's security log. |
 | `approval-flow.sh` | The least-privilege approval demo. |
-| `docs/` | The poisoned issue text, the comment proposal, the side-by-side evidence, and the slides. |
+| `docs/` | The poisoned issue text, the comment proposal, and the side-by-side evidence. |
 
 Built with [Claude Code](https://claude.com/claude-code) as a pair programmer.
