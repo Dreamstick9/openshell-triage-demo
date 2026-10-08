@@ -45,7 +45,8 @@ fi
 openshell rule approve "$SANDBOX" --chunk-id "$CHUNK"
 
 echo; echo "==> 4. Wait until the sandbox has loaded the new rule (no restart):"
-run "curl -s 'http://policy.local/v1/proposals/$CHUNK/wait?timeout=120'"; echo
+run "curl -s 'http://policy.local/v1/proposals/$CHUNK/wait?timeout=120'" \
+  | jq -r '"status: \(.status), policy_reloaded: \(.policy_reloaded)"'
 
 echo; echo "==> 5. The approved action now works:"
 post_comment 1
